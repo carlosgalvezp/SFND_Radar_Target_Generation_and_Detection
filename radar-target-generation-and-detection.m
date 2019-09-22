@@ -11,7 +11,7 @@ speed_of_light = 3 * 10^8;  % [m/s]
 % Range Resolution = 1 m
 % Max Velocity = 70 m/s
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-frequency = 77 * 10^9;    % [Hz]
+fc = 77 * 10^9;           % [Hz]
 max_range = 200;          % [m]
 range_resolution = 1;     % [m]
 max_velocity = 70;        % [m/s]
@@ -58,23 +58,18 @@ td=zeros(1,length(t));
 % Running the radar scenario over the time. 
 
 for i=1:length(t)         
+    % Update the Range of the Target for constant velocity. 
+    r_t(i) = target_initial_range + target_initial_velocity * t(i);
+    td(i) = 2.0 * (r_t(i) / speed_of_light);  % Round-trip time delay between transmitted and received signal
     
+    % Update the transmitted and received signal. 
+    Tx(i) = cos(2*pi*(fc*(t(i)        ) + 0.5*Slope*(t(i)        )^2));
+    Rx(i) = cos(2*pi*(fc*(t(i) - td(i)) + 0.5*Slope*(t(i) - td(i))^2));
     
-    % *%TODO* :
-    %For each time stamp update the Range of the Target for constant velocity. 
-    
-    % *%TODO* :
-    %For each time sample we need update the transmitted and
-    %received signal. 
-    Tx(i) = 
-    Rx (i)  =
-    
-    % *%TODO* :
     %Now by mixing the Transmit and Receive generate the beat signal
     %This is done by element wise matrix multiplication of Transmit and
     %Receiver Signal
-    Mix(i) = 
-    
+    Mix(i) = Tx(i) * Rx(i);    
 end
 
 %% RANGE MEASUREMENT
