@@ -3,19 +3,24 @@ clc;
 
 %% Radar Specifications 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Frequency of operation = 77GHz
-% Max Range = 200m
+% Frequency of operation = 77 GHz
+% Max Range = 200 m
 % Range Resolution = 1 m
-% Max Velocity = 100 m/s
+% Max Velocity = 70 m/s
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
+frequency = 77 * 10^9;    % [Hz]
+max_range = 200;          % [m]
+range_resolution = 1;     % [m]
+max_velocity = 70;        % [m/s]
+velocity_resolution = 3;  % [m/s]
 
-%speed of light = 3e8
+speed_of_light = 3 * 10^8;  % [m/s]
+
 %% User Defined Range and Velocity of target
-% *%TODO* :
-% define the target's initial position and velocity. Note : Velocity
-% remains contant
- 
-
+% define the target's initial position and velocity. 
+% Note : Velocity remains contant
+target_initial_range = 110;     % [m]
+target_initial_velocity = -20;  % [m/s]
 
 %% FMCW Waveform Generation
 
