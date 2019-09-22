@@ -74,34 +74,28 @@ end
 
 %% RANGE MEASUREMENT
 
+% Reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
+% Range and Doppler FFT respectively.
+Mix_matrix = reshape(Mix, Nr, Nd);
 
- % *%TODO* :
-%reshape the vector into Nr*Nd array. Nr and Nd here would also define the size of
-%Range and Doppler FFT respectively.
+% Run the FFT on the beat signal along the range bins dimension (Nr) and
+% normalize.
+fft_range = fft(Mix_matrix, Nr, 1) / Nr;
 
- % *%TODO* :
-%run the FFT on the beat signal along the range bins dimension (Nr) and
-%normalize.
-
- % *%TODO* :
 % Take the absolute value of FFT output
+fft_range_abs = abs(fft_range);
 
- % *%TODO* :
 % Output of FFT is double sided signal, but we are interested in only one side of the spectrum.
 % Hence we throw out half of the samples.
-
+fft_range_abs_half = fft_range_abs(1 : Nr / 2, :);
 
 %plotting the range
 figure ('Name','Range from First FFT')
 subplot(2,1,1)
 
- % *%TODO* :
- % plot FFT output 
-
- 
-axis ([0 200 0 1]);
-
-
+% plot FFT output 
+plot(fft_range_abs_half(:, 1)); 
+axis ([0 200 0 0.5]);
 
 %% RANGE DOPPLER RESPONSE
 % The 2D FFT implementation is already provided here. This will run a 2DFFT
