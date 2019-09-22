@@ -1,6 +1,9 @@
 clear all
 clc;
 
+%% Physical constants
+speed_of_light = 3 * 10^8;  % [m/s]
+
 %% Radar Specifications 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Frequency of operation = 77 GHz
@@ -14,8 +17,6 @@ range_resolution = 1;     % [m]
 max_velocity = 70;        % [m/s]
 velocity_resolution = 3;  % [m/s]
 
-speed_of_light = 3 * 10^8;  % [m/s]
-
 %% User Defined Range and Velocity of target
 % define the target's initial position and velocity. 
 % Note : Velocity remains contant
@@ -24,16 +25,14 @@ target_initial_velocity = -20;  % [m/s]
 
 %% FMCW Waveform Generation
 
-% *%TODO* :
-%Design the FMCW waveform by giving the specs of each of its parameters.
+% Design the FMCW waveform by giving the specs of each of its parameters.
 % Calculate the Bandwidth (B), Chirp Time (Tchirp) and Slope (slope) of the FMCW
 % chirp using the requirements above.
 
+Bandwidth = speed_of_light / (2.0 * range_resolution);  % [Hz]
+Tchirp = 5.5 * 2.0 * max_range / speed_of_light;  % [s]
+Slope = Bandwidth / Tchirp;
 
-%Operating carrier frequency of Radar 
-fc= 77e9;             %carrier freq
-
-                                                          
 %The number of chirps in one sequence. Its ideal to have 2^ value for the ease of running the FFT
 %for Doppler Estimation. 
 Nd=128;                   % #of doppler cells OR #of sent periods % number of chirps
@@ -43,8 +42,7 @@ Nr=1024;                  %for length of time OR # of range cells
 
 % Timestamp for running the displacement scenario for every sample on each
 % chirp
-t=linspace(0,Nd*Tchirp,Nr*Nd); %total time for samples
-
+t=linspace(0, Nd*Tchirp, Nr*Nd); %total time for samples
 
 %Creating the vectors for Tx, Rx and Mix based on the total samples input.
 Tx=zeros(1,length(t)); %transmitted signal
