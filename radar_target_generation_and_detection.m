@@ -92,7 +92,6 @@ fft_range_abs_half = fft_range_abs(1 : Nr / 2, :);
 
 %plotting the range
 figure ('Name','Range from First FFT')
-subplot(2,1,1)
 
 % plot FFT output 
 plot(fft_range_abs_half(:, 1)); 
