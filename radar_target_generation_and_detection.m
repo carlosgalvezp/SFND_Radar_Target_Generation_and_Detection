@@ -1,4 +1,5 @@
 clear all
+close all
 clc;
 
 %% Physical constants
@@ -141,7 +142,7 @@ Gr = 4;
 Gd = 4;
 
 % offset the threshold by SNR value in dB
-offset = 6;
+offset = 10;
 
 % Create a vector to store noise_level for each iteration on training cells
 noise_level = 0;
