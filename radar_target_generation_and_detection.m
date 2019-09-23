@@ -128,60 +128,76 @@ figure,surf(doppler_axis,range_axis,RDM);
 
 %% CFAR implementation
 
-%Slide Window through the complete Range Doppler Map
+% Slide Window through the complete Range Doppler Map
 
-% *%TODO* :
-%Select the number of Training Cells in both the dimensions.
 
-% *%TODO* :
-%Select the number of Guard Cells in both dimensions around the Cell under 
-%test (CUT) for accurate estimation
+% Select the number of Training Cells in both the dimensions.
+Tr = 10;
+Td = 8;
 
-% *%TODO* :
+% Select the number of Guard Cells in both dimensions around the Cell under 
+% test (CUT) for accurate estimation
+Gr = 4;
+Gd = 4;
+
 % offset the threshold by SNR value in dB
+offset = 6;
 
-% *%TODO* :
-%Create a vector to store noise_level for each iteration on training cells
-noise_level = zeros(1,1);
+% Create a vector to store noise_level for each iteration on training cells
+noise_level = 0;
+n_training_cells = 0;
+
+% Create matrix to store output
+RDM_after_CFAR = zeros(size(RDM));
+
+% Design a loop such that it slides the CUT across range doppler map by
+% giving margins at the edges for Training and Guard Cells.
+% For every iteration sum the signal level within all the training
+% cells. To sum convert the value from logarithmic to linear using db2pow
+% function. Average the summed values for all of the training
+% cells used. After averaging convert it back to logarithimic using pow2db.
+% Further add the offset to it to determine the threshold. Next, compare the
+% signal under CUT with this threshold. If the CUT level > threshold assign
+% it a value of 1, else equate it to 0.
+for i = Tr+Gr+1 : size(RDM, 1) - (Tr+Gr)
+    for j = Td+Gd+1 : size(RDM, 2) - (Td+Gd)
+        % Add noise level for all training cells (in Watt, not dBm)
+        for p = i-(Tr+Gr) : i+(Tr+Gr)
+            for q = j-(Td+Gd) : j+(Td+Gd)
+                if abs(i - p) > Gr || abs(j - q) > Gd
+                    noise_level = noise_level + db2pow(RDM(p, q));
+                    n_training_cells = n_training_cells + 1;
+                end
+            end
+        end
+        
+        % Compute average and convert back to dbM
+        noise_level_avg_dbm = pow2db(noise_level / n_training_cells);
+        
+        % Compute threshold
+        threshold = noise_level_avg_dbm + offset;
+        
+        % Store into output
+        if (RDM(i, j) > threshold)
+            RDM_after_CFAR(i, j) = 1;
+        end        
+    end
+end
 
 
-% *%TODO* :
-%design a loop such that it slides the CUT across range doppler map by
-%giving margins at the edges for Training and Guard Cells.
-%For every iteration sum the signal level within all the training
-%cells. To sum convert the value from logarithmic to linear using db2pow
-%function. Average the summed values for all of the training
-%cells used. After averaging convert it back to logarithimic using pow2db.
-%Further add the offset to it to determine the threshold. Next, compare the
-%signal under CUT with this threshold. If the CUT level > threshold assign
-%it a value of 1, else equate it to 0.
 
-
-   % Use RDM[x,y] as the matrix from the output of 2D FFT for implementing
-   % CFAR
-
-
-
-
-
-% *%TODO* :
 % The process above will generate a thresholded block, which is smaller 
-%than the Range Doppler Map as the CUT cannot be located at the edges of
-%matrix. Hence,few cells will not be thresholded. To keep the map size same
+% than the Range Doppler Map as the CUT cannot be located at the edges of
+% matrix. Hence,few cells will not be thresholded. To keep the map size same
 % set those values to 0. 
- 
 
+% -> This is already done in the previous step, since the RDM_after_CFAR
+% matrix was initialized to 0. Since we didn't loop over cells in the edges
+% they keep the value 0.
 
-
-
-
-
-
-
-% *%TODO* :
-%display the CFAR output using the Surf function like we did for Range
-%Doppler Response output.
-figure,surf(doppler_axis,range_axis,'replace this with output');
+% Display the CFAR output using the Surf function like we did for Range
+% Doppler Response output.
+figure,surf(doppler_axis, range_axis, RDM_after_CFAR);
 colorbar;
 
 
